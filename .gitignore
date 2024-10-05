@@ -162,5 +162,5 @@ cython_debug/
 #.idea/
 .idea/
 plytorch_extension/CMakeLists.txt
-plytorch_extension/.idea
+
 
