@@ -12,8 +12,8 @@
 
 
 using namespace miniply;
-using PropertiesType = std::unordered_map<std::string, torch::Tensor>;
-using ElementsType = std::unordered_map<std::string, PropertiesType>;
+using PropertiesType = std::vector<std::pair<std::string, torch::Tensor>>;
+using ElementsType = std::vector<std::pair<std::string, PropertiesType>>;
 
 
 const std::unordered_map<PLYPropertyType, torch::ScalarType> ply_to_torch_dtype = {
@@ -100,15 +100,17 @@ std::pair<std::string, PropertiesType> read_ply_element(miniply::PLYReader& read
                 throw std::runtime_error("list property '" + property.name + "' has varying rowcount(from "+std::to_string(rowcounts[0])+" to "+std::to_string(rowcounts[rowcounts.size() - 1])+"), which is not supported!");
             }
 
-            props_dict[prop_name] = torch::empty({N, rowcounts[0]},
-                                                 at::TensorOptions().dtype(prop_dtype).device(torch::kCPU));
-            reader.extract_list_property(i, property.type, props_dict[prop_name].data_ptr());
+            torch::Tensor data = torch::empty({N, rowcounts[0]},
+                                              at::TensorOptions().dtype(prop_dtype).device(torch::kCPU));
+
+            props_dict.emplace_back(prop_name, data);
+            reader.extract_list_property(i, property.type, data.data_ptr());
         } else {
             torch::ScalarType prop_dtype = get_torch_dtype(property.type);
-            props_dict[prop_name] = torch::empty({N,},
-                                                 at::TensorOptions().dtype(prop_dtype).device(torch::kCPU));
-
-            reader.extract_properties(&i, 1, property.type, props_dict[prop_name].data_ptr());
+            torch::Tensor data = torch::empty({N,},
+                                              at::TensorOptions().dtype(prop_dtype).device(torch::kCPU));
+            props_dict.emplace_back(prop_name, data);
+            reader.extract_properties(&i, 1, property.type, data.data_ptr());
         }
         ++i;
     }
@@ -127,8 +129,7 @@ ElementsType read_ply(const std::string& path) {
 
     for (int i = 0; i != reader.num_elements(); ++i) {
         reader.load_element();
-        auto [el_name, element] = read_ply_element(reader, i);
-        result[el_name] = element;
+        result.push_back(read_ply_element(reader, i));
         reader.next_element();
     }
     return result;
