@@ -163,4 +163,4 @@ cython_debug/
 .idea/
 plytorch_extension/CMakeLists.txt
 
-
+*.ply
