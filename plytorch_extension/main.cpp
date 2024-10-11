@@ -16,13 +16,19 @@ using PropertiesType = std::vector<std::pair<std::string, torch::Tensor>>;
 using ElementsType = std::vector<std::pair<std::string, PropertiesType>>;
 
 
+
 const std::unordered_map<PLYPropertyType, torch::ScalarType> ply_to_torch_dtype = {
     {PLYPropertyType::Char, torch::kByte},
     {PLYPropertyType::UChar, torch::kByte},
     {PLYPropertyType::Short, torch::kInt16},
-    {PLYPropertyType::UShort, torch::kUInt16},
     {PLYPropertyType::Int, torch::kInt32},
+#if (TORCH_VERSION_MAJOR >= 2) && (TORCH_VERSION_MINOR >= 3)
+    {PLYPropertyType::UShort, torch::kUInt16},
     {PLYPropertyType::UInt, torch::kUInt32},
+#elif
+    {PLYPropertyType::UShort, torch::kInt16},
+    {PLYPropertyType::UInt, torch::kInt32},
+#endif
     {PLYPropertyType::Float, torch::kFloat},
     {PLYPropertyType::Double, torch::kDouble},
 };
@@ -30,10 +36,12 @@ const std::unordered_map<PLYPropertyType, torch::ScalarType> ply_to_torch_dtype 
 const std::unordered_map<torch::ScalarType, std::string> torch_dtype_to_ply = {
         {torch::kUInt8, "uchar"},
         {torch::kInt8, "char"},
-        {torch::kUInt16, "ushort"},
         {torch::kInt16, "short"},
-        {torch::kUInt32, "uint"},
         {torch::kInt32, "int"},
+#if (TORCH_VERSION_MAJOR >= 2) && (TORCH_VERSION_MINOR >= 3)
+        {torch::kUInt16, "ushort"},
+        {torch::kUInt32, "uint"},
+#endif
         {torch::kFloat32, "float"},
         {torch::kFloat64, "double"}
 };
@@ -41,10 +49,12 @@ const std::unordered_map<torch::ScalarType, std::string> torch_dtype_to_ply = {
 const std::unordered_map<torch::ScalarType, uint32_t> torch_dtype_to_size = {
         {torch::kUInt8, 1},
         {torch::kInt8, 1},
-        {torch::kUInt16, 2},
         {torch::kInt16, 2},
-        {torch::kUInt32, 4},
         {torch::kInt32, 4},
+#if (TORCH_VERSION_MAJOR >= 2) && (TORCH_VERSION_MINOR >= 3)
+        {torch::kUInt16, 2},
+        {torch::kUInt32, 4},
+#endif
         {torch::kFloat32, 4},
         {torch::kFloat64, 8}
 };

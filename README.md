@@ -127,12 +127,12 @@ is a decorator that specifies a new field in the structure.
 
 TODO: add benchmark and comparison description
 
-| Library                                              | Arbitrary properties | Properties grouping | Load time | Lines of Code<br>to `load` | Save time | Lines of Code<br>to `save` |
-|------------------------------------------------------|----------------------|---------------------|-----------|----------------------------|-----------|----------------------------|
-| [open3d](https://github.com/isl-org/Open3D)          | :x:                  | :white_check_mark:  | 3x        | 6                          | 96x (!)   | 6                          |
-| [trimesh](https://github.com/mikedh/trimesh)         | :x:                  | :white_check_mark:  | 1.40x     | 4-5                        | 1.25x     | 4-5                        |
-| [plyfile](https://github.com/dranjan/python-plyfile) | :white_check_mark:   | :x:                 | 7x        | 6-7                        | 1.26x     | ~20                        |
-| **plytorch**                                         | :white_check_mark:   | :white_check_mark:  | **1.0x**  | **1**                      | **1.0x**  | **1**                      |
+| Library                                              | Arbitrary properties | Properties grouping | Load time | Save time | Lines of Code<br>to `load` | Lines of Code<br>to `save` |
+|------------------------------------------------------|----------------------|---------------------|-----------|-----------|----------------------------|----------------------------|
+| [open3d](https://github.com/isl-org/Open3D)          | :x:                  | :white_check_mark:  | 3x        | 96x (!)   | 6                          | 6                          |
+| [trimesh](https://github.com/mikedh/trimesh)         | :x:                  | :white_check_mark:  | 1.40x     | 1.25x     | 4-5                        | 4-5                        |
+| [plyfile](https://github.com/dranjan/python-plyfile) | :white_check_mark:   | :x:                 | 7x        | 1.26x     | 6-7                        | ~20                        |
+| **plytorch**                                         | :white_check_mark:   | :white_check_mark:  | **1.0x**  | **1.0x**  | **1**                      | **1**                      |
 
 # Low-level access
 

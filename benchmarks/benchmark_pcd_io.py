@@ -35,7 +35,7 @@ class Open3DTest:
             return dict(
                 points=torch.as_tensor(np.asarray(mesh.vertices)),
                 colors=torch.as_tensor(np.asarray(mesh.vertex_colors)),
-                normals=torch.as_tensor(np.asarray(mesh.vertex_normals)),
+                # normals=torch.as_tensor(np.asarray(mesh.vertex_normals)),
                 faces=torch.as_tensor(np.asarray(mesh.triangles))
             )
         else:
@@ -43,7 +43,7 @@ class Open3DTest:
             return dict(
                 points=torch.as_tensor(np.asarray(pcd.points)),
                 colors=torch.as_tensor(np.asarray(pcd.colors)),
-                normals=torch.as_tensor(np.asarray(pcd.normals))
+                # normals=torch.as_tensor(np.asarray(pcd.normals))
             )
 
 
@@ -56,7 +56,7 @@ class TrimeshTest:
     def write(self, points, colors, normals, path, faces=None):
         mesh = trimesh.Trimesh(points, faces) if self.load_faces else trimesh.Trimesh(points)
         mesh.visual.vertex_colors = colors
-        mesh.vertex_normals = normals
+        # mesh.vertex_normals = normals
         mesh.export(path)
 
     def read(self, path):
@@ -81,7 +81,7 @@ class PlyfileTest:
     def write(self, points, colors, normals, path, faces=None):
         vertex_dtype = [
             ('x', 'f4'), ('y', 'f4'), ('z', 'f4'),
-            ('nx', 'f4'), ('ny', 'f4'), ('nz', 'f4'),
+            # ('nx', 'f4'), ('ny', 'f4'), ('nz', 'f4'),
             ('red', 'u1'), ('green', 'u1'), ('blue', 'u1'),
         ]
         vertex_arr = np.empty(len(points), dtype=vertex_dtype)
@@ -91,9 +91,9 @@ class PlyfileTest:
         vertex_arr['red'] = colors[:, 0]
         vertex_arr['green'] = colors[:, 1]
         vertex_arr['blue'] = colors[:, 2]
-        vertex_arr['nx'] = normals[:, 0]
-        vertex_arr['ny'] = normals[:, 1]
-        vertex_arr['nz'] = normals[:, 2]
+        # vertex_arr['nx'] = normals[:, 0]
+        # vertex_arr['ny'] = normals[:, 1]
+        # vertex_arr['nz'] = normals[:, 2]
 
         elements = [pf.PlyElement.describe(vertex_arr, 'vertex')]
 
@@ -111,11 +111,13 @@ class PlyfileTest:
             points = torch.as_tensor(np.stack([data['vertex']['x'], data['vertex']['y'], data['vertex']['z']], axis=1))
             colors = torch.as_tensor(
                 np.stack([data['vertex']['red'], data['vertex']['green'], data['vertex']['blue']], axis=1))
-            normals = torch.as_tensor(
-                np.stack([data['vertex']['nx'], data['vertex']['ny'], data['vertex']['nz']], axis=1))
-            faces = torch.as_tensor(np.stack(data['face']['vertex_index']))
+            # normals = torch.as_tensor(
+            #     np.stack([data['vertex']['nx'], data['vertex']['ny'], data['vertex']['nz']], axis=1))
+            normals = None
+            if self.load_faces:
+                faces = torch.as_tensor(np.stack(data['face']['vertex_index']))
 
-        return dict(points=points, colors=colors, normals=normals, faces=faces)
+        return dict(points=points, colors=colors, normals=normals)#, faces=faces)
 
 
 class PlytorchTest:
@@ -124,17 +126,21 @@ class PlytorchTest:
         self.load_faces = load_faces
 
     def write(self, points, colors, normals, path, faces=None):
+        # if self.load_faces:
+        #     pt.Mesh(points=points, colors=colors, normals=normals, faces=faces).save(path)
+        # else:
+        #     pt.PointCloud(points=points, colors=colors, normals=normals).save(path)
         if self.load_faces:
-            pt.Mesh(points=points, colors=colors, normals=normals, faces=faces).save(path)
+            pt.Mesh(points=points, colors=colors, faces=faces).save(path)
         else:
-            pt.PointCloud(points=points, colors=colors, normals=normals).save(path)
+            pt.PointCloud(points=points, colors=colors).save(path)
 
     def read(self, path):
         return pt.Mesh.load(path) if self.load_faces else pt.PointCloud.load(path)
 
 
-test_meshes = True
-N = 10_000_000
+test_meshes = False
+N = 1_000_000
 M = 1_000_000
 nrepeats = 10
 
@@ -148,7 +154,8 @@ tests = [
 
 kwargs = dict(
     points = torch.rand(N, 3),
-    normals = torch.rand(N, 3),
+    # normals = torch.rand(N, 3),
+    normals = None,
     colors = torch.randint(0, 255, (N, 3)).byte(),
 )
 if test_meshes:
