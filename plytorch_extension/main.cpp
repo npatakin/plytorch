@@ -25,7 +25,7 @@ const std::unordered_map<PLYPropertyType, torch::ScalarType> ply_to_torch_dtype 
 #if (TORCH_VERSION_MAJOR >= 2) && (TORCH_VERSION_MINOR >= 3)
     {PLYPropertyType::UShort, torch::kUInt16},
     {PLYPropertyType::UInt, torch::kUInt32},
-#elif
+#else
     {PLYPropertyType::UShort, torch::kInt16},
     {PLYPropertyType::UInt, torch::kInt32},
 #endif
