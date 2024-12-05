@@ -1,15 +1,9 @@
-import os
-from collections import OrderedDict
-
-import torch
-import _plytorch_extension as pte
-
 """
 PLYData: Fast loading and writing of .ply files with direct PyTorch interface.
 
-This module provides functionality for efficient handling of PLY (Polygon File Format) files,
-with seamless integration with PyTorch tensors. It allows for quick reading and writing of
-3D point cloud data and associated properties.
+This module provides functionality for efficient handling of PLY (Polygon File Format)
+files, with seamless integration with PyTorch tensors. It allows for quick reading and
+writing of 3D point cloud data and associated properties.
 
 The module uses a custom C++ extension (_plytorch_extension) for optimized I/O operations,
 while presenting a Pythonic interface for ease of use.
@@ -37,6 +31,12 @@ Example:
 
 """
 
+import os
+from collections import OrderedDict
+
+import torch
+import _plytorch_extension as pte
+
 
 class PLYElement(OrderedDict):
     __getattr__ = OrderedDict.get
@@ -62,7 +62,8 @@ class PLYElement(OrderedDict):
 
     def __repr__(self):
         props = self.properties
-        return 'PLYElement ({} properties). Properties: {}'.format(len(self), ', '.join(props))
+        return 'PLYElement ({} properties). Properties: {}'.format(
+            len(self), ', '.join(props))
 
 
 class PLYData(OrderedDict):
@@ -82,7 +83,8 @@ class PLYData(OrderedDict):
 
     def save(self, path: str):
         if not os.path.isdir(os.path.dirname(os.path.abspath(path))):
-            raise FileNotFoundError("Parent directory does not exist for path: '{}'".format(path))
+            raise FileNotFoundError(
+                "Parent directory does not exist for path: '{}'".format(path))
 
         pte.write_ply(
             path, [
