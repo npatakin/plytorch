@@ -25,7 +25,7 @@ class Mesh(PointCloud):
 
 
 class Lines(PointCloud):
-    edges: field('edge', ['vertex_1', 'vertex_2'], required=True, index_of='vertex')
+    edges: field('edge', ['vertex1', 'vertex2'], required=True, index_of='vertex')
 
     @property
     def num_edges(self):
